@@ -56,7 +56,7 @@ ${partnerInput}
 Analyze both perspectives and provide your structured recommendation as JSON. Use "${creatorName}" and "${partnerName}" when referencing each person.`;
 
   const response = await anthropic.messages.create({
-    model: 'claude-sonnet-4-5-20250514',
+    model: 'claude-sonnet-4-5-20250929',
     max_tokens: 2000,
     system: DECIDE_SYSTEM_PROMPT,
     messages: [{ role: 'user', content: userMessage }],
