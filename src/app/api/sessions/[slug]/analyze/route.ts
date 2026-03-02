@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSupabase } from '@/lib/supabase-server';
 import { analyzeDecideSession } from '@/lib/ai';
 
-export const maxDuration = 10; // Vercel serverless timeout
 
 export async function POST(
   req: NextRequest,
