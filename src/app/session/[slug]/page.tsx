@@ -108,7 +108,7 @@ export default function SessionPage() {
 
   // Poll for updates when waiting or analyzing
   useEffect(() => {
-    if (state === 'waiting' || state === 'analyzing') {
+    if (state === 'waiting') {
       pollRef.current = setInterval(async () => {
         const res = await fetch(`/api/sessions/${slug}`);
         if (!res.ok) return;
