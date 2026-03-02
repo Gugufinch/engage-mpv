@@ -78,6 +78,8 @@ export default function SessionPage() {
       if (data.session.status === 'analyzing') {
         setState('analyzing');
         if (!analyzeStartTime) setAnalyzeStartTime(Date.now());
+        // Try to trigger analysis again in case it got stuck
+        triggerAnalysis();
         return;
       }
       if (myInputExists) {
@@ -106,7 +108,7 @@ export default function SessionPage() {
     fetchSession();
   }, [fetchSession]);
 
-  // Poll for updates when waiting or analyzing
+  // Poll for updates when waiting
   useEffect(() => {
     if (state === 'waiting') {
       pollRef.current = setInterval(async () => {
@@ -193,15 +195,13 @@ export default function SessionPage() {
   async function triggerAnalysis() {
     try {
       const res = await fetch(`/api/sessions/${slug}/analyze`, { method: 'POST' });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.analysis) {
-          setSessionData(prev => prev ? { ...prev, analysis: data.analysis, session: { ...prev.session, status: 'complete' } } : null);
-          setState('reveal');
-        }
+      const data = await res.json();
+      if (res.ok && data.analysis) {
+        setSessionData(prev => prev ? { ...prev, analysis: data.analysis, session: { ...prev.session, status: 'complete' } } : null);
+        setState('reveal');
+        if (pollRef.current) clearInterval(pollRef.current);
       } else {
-        const errData = await res.json().catch(() => ({}));
-        console.error('Analysis failed:', errData);
+        console.error('Analysis failed:', data);
         setState('failed');
       }
     } catch (err) {
